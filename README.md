@@ -1,39 +1,3 @@
-GRANDMA'S AI ASSISTANT
-
-Question Statement/Production Information: This is backend architecutre for an ai assitant which can do the following things - 
-- set up bookings at salons
-- set up bookings at retraunts
-- remind a user to take medicines
-- inform family users about the medicines
-- share other kinds of activities. 
-
-This application backend has been created thinking in mind that this would be used by a user who is old, has some cognitive deficiency.
-
-NOTE: This application has been created for a startup with POC level code, has production scaling wherever required. This code is written in a way that it can be scaled up efficiently to a million users. All services can be easily fetched out later on when required. 
-
-Steps for running the server - 
-
-pip install -r requirements.txt
-set up the env file (current settings file (core/config) -> is hardcoded with dummy values)
-
-- Run local containers for postgres and redis
-docker compose up postgres redis
-
-- Run the app server 
-python -m run_server
-
-- Run the worker
-python -m worker
-
-LLD Design of the system - 
-
-
-
-HLD Design - 
-Workers can be run over lambdas or a EC2, depending upon the queue load. Scaling of these workers has been kept independent so that even at POC level we can support a good amount of traffic which gives up time to scale up the service, extract services into separate containers and run them. 
-
-
-
 # 👵 Grandma's AI Assistant
 
 **Empowering independence for elderly users and people with cognitive impairments.**
