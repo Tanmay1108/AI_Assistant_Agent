@@ -63,6 +63,9 @@ Although a POC, the design supports **horizontal scaling** and separation of con
 - **Worker Layer**: Runs `TaskConsumer` instances that call `TaskService.process_task(...)`.
 - **DB** (Postgres): Stores users, tasks, task states, results, and auditing fields.
 
+<img width="1156" height="595" alt="Screenshot 2025-08-10 at 10 26 47 PM" src="https://github.com/user-attachments/assets/0ca942a3-8f01-4a37-94e6-b0e95ff395fb" />
+
+
 ---
 
 ## 🏁 Quickstart — Run locally
@@ -98,3 +101,21 @@ Worker reads from Redis, calls TaskService.process_task.
 Service routes to RestaurantBookingService, executes booking.
 Task status is updated (COMPLETED / FAILED), result saved.
 Webhook notification sent.
+
+
+Sample API CALL and output
+<img width="1327" height="629" alt="Screenshot 2025-08-10 at 10 27 48 PM" src="https://github.com/user-attachments/assets/b1c4b67a-fb55-458c-a354-84eec42e6508" />
+
+
+<img width="1290" height="425" alt="Screenshot 2025-08-10 at 10 28 04 PM" src="https://github.com/user-attachments/assets/0e418559-bcfc-474c-af08-1f5f9f715344" />
+
+
+Webhook output - <img width="803" height="313" alt="Screenshot 2025-08-10 at 10 28 26 PM" src="https://github.com/user-attachments/assets/c21a1a74-6fec-49a6-85c6-a5d4523560a0" />
+
+
+TODO - 
+- Add a feedback loop
+- Add core logic for services such as booking services.
+- Improve the input prompt for better outputs in intent classifier service.
+- Work over reminder services.
+- Add better error handling
