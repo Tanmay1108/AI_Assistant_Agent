@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 
 from schemas.task import TaskRequest, TaskResponse
 from services.task_service import TaskService
@@ -10,10 +10,10 @@ logger = logging.getLogger(__name__)
 
 
 @router.post("/tasks", response_model=TaskResponse)
-async def create_task(task_data: TaskRequest):
-    task_service = TaskService()
-    task = await task_service.create_task(task_data.model_dump())
-    return task
+async def create_task_endpoint(request_data: TaskRequest, request: Request):
+    task_queue = request.app.state.task_queue
+    service = TaskService(task_queue)
+    return await service.create_task(request_data.model_dump())
 
 
 @router.get("/tasks/{task_id}", response_model=TaskResponse)

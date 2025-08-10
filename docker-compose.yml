@@ -1,4 +1,12 @@
 services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+  
   app:
     build: .
     ports:
@@ -46,9 +54,34 @@ services:
           memory: '128M'
       restart_policy:
         condition: on-failure
+  worker:
+    build: .
+    environment:
+      - DATABASE_URL=postgresql://user:pass@postgres/aiagent
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+      - postgres
+      - app
+    volumes:
+      - .:/app
+    command: python worker.py
+
+  reminder-worker:
+    build: .
+    environment:
+      - DATABASE_URL=postgresql://user:pass@postgres/aiagent
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+      - postgres
+    volumes:
+      - .:/app
+    command: python reminder_worker.py
 
 networks:
   app-network:
 
 volumes:
+  redis_data:
   postgres_data:

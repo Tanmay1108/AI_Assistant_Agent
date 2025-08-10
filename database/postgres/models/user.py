@@ -22,3 +22,4 @@ class User(Base):
 
     tasks = relationship("Task", back_populates="user")
     feedback = relationship("Feedback", back_populates="user")
+    reminders = relationship("Reminder", back_populates="user")

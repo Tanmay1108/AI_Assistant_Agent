@@ -29,7 +29,9 @@ class AIProviderRouter:
     async def process_with_fallback(self, method_name: str, *args, **kwargs):
         """Try primary provider, fallback to secondary if available"""
         primary_provider = self.get_provider()
+        import pdb
 
+        pdb.set_trace()
         try:
             method = getattr(primary_provider, method_name)
             return await method(*args, **kwargs)

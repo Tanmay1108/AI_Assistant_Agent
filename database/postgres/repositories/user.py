@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -45,4 +45,13 @@ class UserRepository:
 
         except Exception as e:
             logger.error(f"Error creating booking: {str(e)}")
+            raise
+
+    async def get_user_by_id(self, user_id: int) -> Optional[User]:
+        try:
+            stmt = select(User).where(User.id == user_id)
+            result = await self._session.execute(stmt)
+            return result.scalar_one_or_none()
+        except Exception as e:
+            logger.error(f"Error fetching user with ID {user_id}: {str(e)}")
             raise

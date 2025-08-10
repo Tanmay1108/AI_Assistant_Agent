@@ -29,7 +29,6 @@ class RestaurantBookingService(BaseTaskService):
         self, details: Dict[str, Any], user_context: Dict[str, Any]
     ) -> Dict[str, Any]:
         try:
-            # Simulate restaurant booking API call
             booking_data = {
                 "restaurant": details["restaurant_name"],
                 "date": details["date"],
@@ -40,11 +39,6 @@ class RestaurantBookingService(BaseTaskService):
                 "email": user_context.get("email"),
                 "special_requests": details.get("special_requests", ""),
             }
-
-            # In production, this would be a real API call
-            # async with httpx.AsyncClient() as client:
-            #     response = await client.post("https://restaurant-api.com/bookings", json=booking_data)
-            #     result = response.json()
 
             # Simulate successful booking
             result = {

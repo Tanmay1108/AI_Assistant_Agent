@@ -31,7 +31,6 @@ class TaskManager:
                 "available_tasks": list(self.services.keys()),
             }
 
-        # Validate input
         validation_result = await service.validate_input(details)
         if not validation_result.get("valid", False):
             return {
@@ -40,7 +39,6 @@ class TaskManager:
                 "validation_details": validation_result,
             }
 
-        # Execute task
         result = await service.execute(details, user_context)
         return result
 

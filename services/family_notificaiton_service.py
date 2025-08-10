@@ -30,25 +30,51 @@ class FamilyNotificationService(BaseTaskService):
                     "message": "No family contacts configured. Please add family members first.",
                 }
 
-            notification_data = {
-                "message": details["message"],
-                "sender": user_context.get("name", "User"),
-                "timestamp": datetime.now().isoformat(),
-                "recipients": family_contacts,
-            }
+            # Send webhooks to family members
+            from services.webhook_service import WebhookService
 
-            # In production, this would send SMS/email
-            sent_count = len(family_contacts)
+            webhook_service = WebhookService()
 
-            result = {
-                "success": True,
-                "notification_id": f"FAM_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
-                "message": f"Successfully notified {sent_count} family members: {details['message']}",
-                "details": notification_data,
-                "sent_to": [
-                    contact.get("name", "Unknown") for contact in family_contacts
-                ],
-            }
+            sent_count = 0
+            failed_contacts = []
+
+            for contact in family_contacts:
+                webhook_url = contact.get("webhook_url")
+                if webhook_url:
+                    notification_data = {
+                        "message": details["message"],
+                        "sender_name": user_context.get("name", "User"),
+                        "sender_id": user_context.get("user_id"),
+                        "timestamp": datetime.now().isoformat(),
+                        "contact_name": contact.get("name", "Family Member"),
+                    }
+
+                    success = await webhook_service.send_webhook(
+                        webhook_url, notification_data, "family_notification"
+                    )
+
+                    if success:
+                        sent_count += 1
+                    else:
+                        failed_contacts.append(contact.get("name", "Unknown"))
+
+            if sent_count > 0:
+                result = {
+                    "success": True,
+                    "notification_id": f"FAM_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+                    "message": f"Successfully notified {sent_count} family members: {details['message']}",
+                    "details": {
+                        "sent_to": sent_count,
+                        "failed": len(failed_contacts),
+                        "failed_contacts": failed_contacts,
+                    },
+                }
+            else:
+                result = {
+                    "success": False,
+                    "message": "Failed to notify any family members. Check webhook configurations.",
+                    "details": {"failed_contacts": failed_contacts},
+                }
 
             return result
 

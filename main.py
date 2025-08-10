@@ -2,14 +2,14 @@ import logging as log
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy import text
 
 from core.config import settings
 from database.postgres.postgres_database import PostgresDatabase
+from queue_infra.redis_queue import RedisTaskQueue
 from routes.health import router as health_router
 from routes.task import router as task_router
 from routes.users import router as user_router
@@ -23,6 +23,8 @@ log.basicConfig(
 )
 
 logger = log.getLogger(__name__)
+
+task_queue = None
 
 
 @asynccontextmanager
@@ -39,9 +41,13 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         #             raise Exception("Database schema version verification failed")
         #         log.info(f"Current database schema version: {version}")
         await PostgresDatabase.init_db()
+        app.state.task_queue = RedisTaskQueue()
+        await app.state.task_queue.connect()
         yield
     finally:
         await PostgresDatabase.close_db()
+        if task_queue:
+            await app.state.task_queue.close()
 
 
 def custom_openapi():

@@ -39,7 +39,6 @@ class SalonBookingService(BaseTaskService):
                 "email": user_context.get("email"),
             }
 
-            # Simulate successful booking
             result = {
                 "success": True,
                 "booking_id": f"SALON_{datetime.now().strftime('%Y%m%d_%H%M%S')}",

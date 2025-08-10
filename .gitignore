@@ -7,3 +7,5 @@ mypy.ini
 .mypy_cache
 
 assist_env/
+
+notebooks/
